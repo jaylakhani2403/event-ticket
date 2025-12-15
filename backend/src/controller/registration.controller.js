@@ -56,9 +56,9 @@ export  const createRegistration = async (req, res) => {
     );
 
   } catch (error) {
-    return res.status(error.statusCode || 500).json({
-      message: error.message || "Internal Server Error"
-    });
+    return res
+      .status(error.statusCode || 500)
+      .json(new ApiResponse(error.statusCode || 500, null, error.message || "Internal Server Error"));
   }
 };
 
@@ -77,9 +77,9 @@ export const getMyRegistrations = async (req, res) => {
       .status(200)
       .json(new ApiResponse(200, registrations, "Registrations fetched"));
   } catch (error) {
-    res.status(error.statusCode || 500).json({
-      message: error.message || "Internal Server Error"
-    });
+    res
+      .status(error.statusCode || 500)
+      .json(new ApiResponse(error.statusCode || 500, null, error.message || "Internal Server Error"));
   }
 };
 
@@ -155,9 +155,9 @@ export const updateRegistrationStatus = async (req, res) => {
       .status(200)
       .json(new ApiResponse(200, registration, "Entry marked successfully"));
   } catch (error) {
-    res.status(error.statusCode || 500).json({
-      message: error.message || "Internal Server Error"
-    });
+    res
+      .status(error.statusCode || 500)
+      .json(new ApiResponse(error.statusCode || 500, null, error.message || "Internal Server Error"));
   }
 };
 

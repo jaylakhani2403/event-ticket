@@ -35,9 +35,9 @@ const signup = async (req, res) => {
       .json(new ApiResponse(201, user, "User registered successfully"));
   } catch (error) {
     console.log(error)
-    res.status(error.statusCode || 500).json({
-      message: error.message || "Internal Server Error"
-    });
+    res
+      .status(error.statusCode || 500)
+      .json(new ApiResponse(error.statusCode || 500, null, error.message || "Internal Server Error"));
   }
 };
 
@@ -82,9 +82,9 @@ const loginUser = async (req, res) => {
       )
     );
   } catch (error) {
-    res.status(error.statusCode || 500).json({
-      message: error.message || "Internal Server Error"
-    });
+    res
+      .status(error.statusCode || 500)
+      .json(new ApiResponse(error.statusCode || 500, null, error.message || "Internal Server Error"));
   }
 };
 
