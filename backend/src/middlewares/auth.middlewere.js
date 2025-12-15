@@ -1,32 +1,31 @@
+import jwt from "jsonwebtoken";
 import User from "../models/user.models.js";
 import { ApiError } from "../utils/ApiError.js";
-import jwt from "jsonwebtoken";
 
-import dotenv from "dotenv";
-dotenv.config({ path: "./.env" });
+const authMiddleware = async (req, res, next) => {
+  try {
+    const authHeader = req.headers.authorization;
 
-const authmiddleware= async (req,res,next)=>{
-     try {
-        const token= req.cookies.token || req.header("Authorization")?.replace("Bearer ","");
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return next(new ApiError(401, "Authorization token missing"));
+    }
 
-        if (!token) {
-            throw new ApiError(401, "Unauthorized request");
-          }
+    const token = authHeader.split(" ")[1];
 
-          const decode= jwt.verify(token,process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-          const user = await User.findById(decode.userId).select("-password");
-          if (!user) {
-            throw new ApiError(401, "Invalid token");
-          }
-      
-          req.user = user;
-          next();
-     } catch (error) {
-        next(new ApiError(401, error.message || "Invalid token"));
+    // IMPORTANT: use decoded.id (not userId)
+    const user = await User.findById(decoded.userId).select("-password");
 
-        
-     }
-}
+    if (!user) {
+      return next(new ApiError(401, "Invalid token"));
+    }
 
-export default authmiddleware;
+    req.user = user;
+    next();
+  } catch (error) {
+    return next(new ApiError(401, "Token verification failed"));
+  }
+};
+
+export default authMiddleware;

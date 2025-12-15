@@ -6,7 +6,8 @@ import dotenv from "dotenv";
 dotenv.config({ path: "./.env" });
 import dbconfig from "./config/db.config.js";
 dbconfig();
-import authRouter from './routers/auth.router.js'
+import authRouter from './routers/auth.routes.js';
+import eventRouter from './routers/event.routes.js'
 
 const corsOptions = {
     origin: '*',
@@ -21,6 +22,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
  
 
 app.use('/auth',authRouter);
+app.use('/event',eventRouter)
 
 const PORT=process.env.PORT || 3000;
 app.listen(PORT,(req,res)=>{

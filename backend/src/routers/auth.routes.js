@@ -1,5 +1,3 @@
-import authMiddleware from "../middlewares/auth.middlewere.js";
-
 import { Router } from "express";
 import { signup, loginUser } from "../controller/auth.controller.js";
 

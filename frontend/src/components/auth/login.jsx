@@ -1,10 +1,12 @@
 import { useState } from 'react'
 import axios from 'axios'
+import { useNavigate } from 'react-router-dom'
 
 function Login() {
   const [form, setForm] = useState({ email: '', password: '', remember: false })
   const [message, setMessage] = useState('')
   const [loading, setLoading] = useState(false)
+  const navigate= useNavigate();
 
   const API_BASE = import.meta.env.VITE_API_BASE_URL || ''
 
@@ -34,7 +36,11 @@ function Login() {
         password: form.password,
         remember: form.remember,
       })
+     const token=data.data.token;
+     console.log(token);
+      localStorage.setItem("token",token);
       setMessage(data?.message || 'Signed in successfully.')
+      navigate('/org/events/add');
     } catch (err) {
       const apiMessage = err?.response?.data?.message
       setMessage(apiMessage || 'Unable to sign in. Please try again.')

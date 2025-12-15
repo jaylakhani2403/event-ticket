@@ -3,6 +3,9 @@ import Login from './components/auth/login.jsx'
 import Signup from './components/auth/Singup.jsx'
 import Dashboard from './components/Dashboard.jsx'
 import Events from './components/Events.jsx'
+import AddEvent from './components/organisation/AddEvent.jsx'
+import AllEvent from './components/organisation/AllEvent.jsx'
+import EventDetails from './components/organisation/EventDetails.jsx'
 import './App.css'
 
 const events = [
@@ -73,6 +76,12 @@ function App() {
             <Link className="text-slate-700 hover:text-indigo-600" to="/events">
               All events
             </Link>
+            <Link className="text-slate-700 hover:text-indigo-600" to="/org/events">
+              My events
+            </Link>
+            <Link className="text-slate-700 hover:text-indigo-600" to="/org/events/add">
+              Add event
+            </Link>
             <Link className="rounded-lg bg-slate-900 px-3 py-2 text-white hover:bg-slate-800" to="/login">
               Login
             </Link>
@@ -90,6 +99,9 @@ function App() {
         <Routes>
           <Route path="/" element={<Dashboard events={events} />} />
           <Route path="/events" element={<Events events={events} />} />
+          <Route path="/org/events" element={<AllEvent />} />
+          <Route path="/org/events/add" element={<AddEvent />} />
+          <Route path="/org/events/:id" element={<EventDetails />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="*" element={<Navigate to="/" replace />} />
