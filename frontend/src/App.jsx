@@ -1,4 +1,6 @@
-import { Link, Routes, Route, Navigate } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { Link, Routes, Route, Navigate, useLocation } from 'react-router-dom'
+import axios from 'axios'
 import Login from './components/auth/login.jsx'
 import Signup from './components/auth/Singup.jsx'
 import Dashboard from './components/Dashboard.jsx'
@@ -6,104 +8,124 @@ import Events from './components/Events.jsx'
 import AddEvent from './components/organisation/AddEvent.jsx'
 import AllEvent from './components/organisation/AllEvent.jsx'
 import EventDetails from './components/organisation/EventDetails.jsx'
+import BookTicket from './components/customer/BookTicket.jsx'
+import GetTicket from './components/customer/GetTicket..jsx'
+import Scanner from './components/organisation/Scanner.jsx'
 import './App.css'
 
-const events = [
-  {
-    id: 'evt-1',
-    name: 'Summer Music Fest',
-    date: '2025-07-12',
-    location: 'Central Park, NYC',
-    price: '$120',
-    ticketsLeft: 86,
-    category: 'Music',
-    description: 'Outdoor live performances from top indie and pop artists.',
-  },
-  {
-    id: 'evt-2',
-    name: 'Tech Innovators Summit',
-    date: '2025-08-03',
-    location: 'Moscone Center, SF',
-    price: '$249',
-    ticketsLeft: 42,
-    category: 'Conference',
-    description: 'Talks and demos on AI, cloud, and developer tooling.',
-  },
-  {
-    id: 'evt-3',
-    name: 'Championship Finals',
-    date: '2025-09-18',
-    location: 'Madison Square Garden',
-    price: '$180',
-    ticketsLeft: 120,
-    category: 'Sports',
-    description: 'The season’s biggest matchup with live entertainment.',
-  },
-  {
-    id: 'evt-4',
-    name: 'Design & UX Expo',
-    date: '2025-10-05',
-    location: 'Austin Convention Center',
-    price: '$95',
-    ticketsLeft: 230,
-    category: 'Design',
-    description: 'Hands-on workshops and keynotes on product design.',
-  },
-  {
-    id: 'evt-5',
-    name: 'Food & Wine Fair',
-    date: '2025-07-28',
-    location: 'Napa Valley',
-    price: '$150',
-    ticketsLeft: 64,
-    category: 'Food',
-    description: 'Taste the best regional food, wine, and culinary demos.',
-  },
-]
-
 function App() {
+  const [events, setEvents] = useState([])
+  const [eventsLoading, setEventsLoading] = useState(false)
+  const [eventsMessage, setEventsMessage] = useState('')
+  const [isAuthed, setIsAuthed] = useState(Boolean(localStorage.getItem('token')))
+  const location = useLocation()
+  const API_BASE = import.meta.env.VITE_API_BASE_URL || ''
+
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        setEventsLoading(true)
+        const url = `${API_BASE}/event`
+        const { data } = await axios.get(url)
+        const list = data?.data || data || []
+        const today = new Date()
+        today.setHours(0, 0, 0, 0)
+        const upcomingEvents = list.filter((event) => {
+          if (!event.date) return false
+          return new Date(event.date) >= today
+        })
+        setEvents(upcomingEvents)
+        setEventsMessage('')
+      } catch (err) {
+        const apiMessage = err?.response?.data?.message
+        setEventsMessage(apiMessage || 'Unable to load events.')
+      } finally {
+        setEventsLoading(false)
+      }
+    }
+    fetchEvents()
+  }, [API_BASE])
+
+  useEffect(() => {
+    const syncAuth = () => setIsAuthed(Boolean(localStorage.getItem('token')))
+    window.addEventListener('storage', syncAuth)
+    window.addEventListener('auth-changed', syncAuth)
+    return () => {
+      window.removeEventListener('storage', syncAuth)
+      window.removeEventListener('auth-changed', syncAuth)
+    }
+  }, [])
+
+  const handleLogout = () => {
+    localStorage.removeItem('token')
+    setIsAuthed(false)
+  }
+
+  const navLink = (to, label, primary = false) => (
+    <Link
+      className={`rounded-lg px-3 py-2 text-sm font-medium transition ${
+        location.pathname === to
+          ? primary
+            ? 'bg-white text-indigo-700 shadow-sm'
+            : 'bg-white/20 text-white shadow-sm'
+          : primary
+            ? 'bg-white/80 text-indigo-700 hover:bg-white'
+            : 'text-white/90 hover:bg-white/10 hover:text-white'
+      }`}
+      to={to}
+    >
+      {label}
+    </Link>
+  )
+
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
-      <header className="bg-white shadow-sm ring-1 ring-slate-200">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
-          <Link to="/" className="text-xl font-semibold tracking-tight text-slate-900">
+      <header className="bg-gradient-to-r from-indigo-600 via-indigo-500 to-purple-500 text-white shadow-sm">
+        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-4">
+          <Link to="/" className="text-xl font-semibold tracking-tight">
             Event Ticket
           </Link>
-          <nav className="flex items-center gap-4 text-sm font-medium">
-            <Link className="text-slate-700 hover:text-indigo-600" to="/">
-              Dashboard
-            </Link>
-            <Link className="text-slate-700 hover:text-indigo-600" to="/events">
-              All events
-            </Link>
-            <Link className="text-slate-700 hover:text-indigo-600" to="/org/events">
-              My events
-            </Link>
-            <Link className="text-slate-700 hover:text-indigo-600" to="/org/events/add">
-              Add event
-            </Link>
-            <Link className="rounded-lg bg-slate-900 px-3 py-2 text-white hover:bg-slate-800" to="/login">
-              Login
-            </Link>
-            <Link
-              className="rounded-lg bg-indigo-600 px-3 py-2 text-white shadow-sm hover:bg-indigo-700"
-              to="/signup"
-            >
-              Sign up
-            </Link>
+          <nav className="flex flex-wrap items-center gap-2">
+            {navLink('/', 'Dashboard')}
+            {navLink('/events', 'All events')}
+            {/* {navLink('/book/placeholder', 'Book ticket')} */}
+            {navLink('/tickets', 'My tickets')}
+            {isAuthed && navLink('/org/events', 'My events')}
+            {isAuthed && navLink('/org/events/add', 'Add event')}
+            {isAuthed && navLink('/org/scanner', 'Scanner')}
+            {!isAuthed && navLink('/login', 'Login')}
+            {!isAuthed && navLink('/signup', 'Sign up', true)}
+            {isAuthed && (
+              <button
+                onClick={handleLogout}
+                className="rounded-lg bg-white/80 px-3 py-2 text-sm font-semibold text-indigo-700 shadow-sm transition hover:bg-white"
+              >
+                Logout
+              </button>
+            )}
           </nav>
         </div>
       </header>
 
       <main className="mx-auto flex max-w-6xl flex-col px-4 py-10">
         <Routes>
-          <Route path="/" element={<Dashboard events={events} />} />
-          <Route path="/events" element={<Events events={events} />} />
+          <Route
+            path="/"
+            element={<Dashboard events={events} loading={eventsLoading} message={eventsMessage} />}
+          />
+          <Route
+            path="/events"
+            element={<Events events={events} loading={eventsLoading} message={eventsMessage} />}
+          />
+          <Route path="/book/:id" element={<BookTicket />} />
+          <Route path="/tickets" element={<GetTicket />} />
           <Route path="/org/events" element={<AllEvent />} />
           <Route path="/org/events/add" element={<AddEvent />} />
           <Route path="/org/events/:id" element={<EventDetails />} />
+          <Route path="/org/scanner" element={<Scanner />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
+          <Route path="/getTicket" element={<GetTicket />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>

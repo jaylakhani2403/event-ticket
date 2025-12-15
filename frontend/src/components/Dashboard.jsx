@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 
-function Dashboard({ events = [] }) {
+function Dashboard({ events = [], loading = false, message = '' }) {
   const featured = events.slice(0, 3)
   const totalTickets = events.reduce((sum, evt) => sum + evt.ticketsLeft, 0)
 
@@ -60,6 +60,12 @@ function Dashboard({ events = [] }) {
           </Link>
         </div>
 
+        {message && (
+          <div className="rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-800">{message}</div>
+        )}
+
+        {loading && <p className="text-sm text-slate-600">Loading events…</p>}
+
         <div className="grid gap-4 md:grid-cols-3">
           {featured.map((evt) => (
             <div
@@ -72,7 +78,7 @@ function Dashboard({ events = [] }) {
               <p className="text-sm text-slate-600">{evt.date}</p>
               <div className="mt-3 flex items-center justify-between text-sm font-semibold text-slate-900">
                 <span>{evt.price}</span>
-                <span className="text-indigo-600">{evt.ticketsLeft} left</span>
+                <span className="text-indigo-600">{evt.ticketLimit-evt.totalRegister} left</span>
               </div>
               <p className="mt-2 line-clamp-2 text-sm text-slate-600">{evt.description}</p>
               <div className="mt-3 flex gap-2">

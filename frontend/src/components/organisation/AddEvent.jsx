@@ -28,6 +28,13 @@ function AddEvent() {
     e.preventDefault()
     setMessage('')
 
+    const today = new Date().setHours(0, 0, 0, 0)
+    const selected = form.date ? new Date(form.date).setHours(0, 0, 0, 0) : null
+    if (selected !== null && selected < today) {
+      setMessage('Please pick today or a future date.')
+      return
+    }
+
     if (!token) {
       setMessage('Please login as organizer to add events.')
       return
@@ -115,6 +122,7 @@ function AddEvent() {
               id="date"
               name="date"
               type="date"
+            min={new Date().toISOString().split('T')[0]}
               className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 outline-none focus:border-indigo-400 focus:bg-white focus:ring-2 focus:ring-indigo-200"
               value={form.date}
               onChange={handleChange}

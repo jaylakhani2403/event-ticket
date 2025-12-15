@@ -31,9 +31,12 @@ const eventSchema = new mongoose.Schema(
 
     ticketLimit: {
       type: Number,
-      default: 0 // 0 = unlimited
+      default: 0 
     },
-
+    totalRegister:{
+      type: Number,
+      default: 0 
+    },
     approvalMode: {
       type: String,
       enum: ["auto", "manual"],

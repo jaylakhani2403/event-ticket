@@ -8,46 +8,40 @@ const registrationSchema = new mongoose.Schema(
       ref: "Event",
       required: true
     },
-
     name: {
       type: String,
       required: true,
       trim: true
     },
-
     email: {
       type: String,
       required: true,
       lowercase: true,
       trim: true
     },
-
     status: {
       type: String,
       enum: ["pending", "approved", "rejected"],
       default: "pending"
     },
-
     ticketId: {
       type: String,
-      default: null,
       unique: true,
-      sparse: true // allows multiple null values
+      sparse: true,
+      default: null
     },
     entryTime: {
-        type: Date,
-        default: null // set when ticket is scanned
-      }
+      type: Date,
+      default: null
+    }
   },
-  {
-    timestamps: true
-  }
+  { timestamps: true }
 );
-registrationSchema.pre("save", function (next) {
+
+registrationSchema.pre("save", function () {
   if (this.isModified("status") && this.status === "approved" && !this.ticketId) {
     this.ticketId = uuidv4();
   }
-  next();
 });
 
 const Registration = mongoose.model("Registration", registrationSchema);

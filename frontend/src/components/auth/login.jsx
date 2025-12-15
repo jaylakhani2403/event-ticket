@@ -40,6 +40,7 @@ function Login() {
      console.log(token);
       localStorage.setItem("token",token);
       setMessage(data?.message || 'Signed in successfully.')
+      window.dispatchEvent(new Event('auth-changed'))
       navigate('/org/events/add');
     } catch (err) {
       const apiMessage = err?.response?.data?.message

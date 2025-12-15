@@ -2,6 +2,7 @@
 import Event from "../models/event.models.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
+import Registration from "../models/registration.models.js";
 
 
 export const eventadd = async (req, res) => {
@@ -54,6 +55,21 @@ export const getMyEvents  = async (req , res )=>{
     }
 }
 
+// Public: fetch all events
+export const getAllEvents = async (req, res) => {
+    try {
+      const events = await Event.find().sort({ createdAt: -1 });
+      return res
+        .status(200)
+        .json(new ApiResponse(200, events, "events fetched successfully"));
+    } catch (error) {
+      console.log(error)
+      res.status(error.statusCode || 500).json({
+        message: error.message || "Internal Server Error"
+      });
+    }
+}
+
 
 export const getEventById = async (req, res) => {
     try {
@@ -94,3 +110,23 @@ export const getEventById = async (req, res) => {
     }
   };
 
+
+
+  export const getallEventRegUser = async(req,res)=>{
+    try {
+      const { id }=req.params;
+  
+
+   const  allRgustraction= await Registration.find({
+        event:id
+      });
+   
+
+      res.status(200).json({ message: "Data Fetch  successfully" ,data:allRgustraction});
+      
+    } catch (error) {
+      console.error("getallEventRegUser Error:", error);
+      res.status(500).json({ message: "Server error" });
+      
+    }
+  }
