@@ -1,7 +1,9 @@
-import User from "../models/user.models";
-import { ApiError } from "../utils/ApiError";
+import User from "../models/user.models.js";
+import { ApiError } from "../utils/ApiError.js";
 import jwt from "jsonwebtoken";
 
+import dotenv from "dotenv";
+dotenv.config({ path: "./.env" });
 
 const authmiddleware= async (req,res,next)=>{
      try {
@@ -13,7 +15,7 @@ const authmiddleware= async (req,res,next)=>{
 
           const decode= jwt.verify(token,process.env.JWT_SECRET);
 
-          const user = await User.findById(decoded.userId).select("-password");
+          const user = await User.findById(decode.userId).select("-password");
           if (!user) {
             throw new ApiError(401, "Invalid token");
           }
@@ -27,4 +29,4 @@ const authmiddleware= async (req,res,next)=>{
      }
 }
 
-export default authMiddleware;
+export default authmiddleware;

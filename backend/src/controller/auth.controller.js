@@ -1,14 +1,16 @@
-import mongoose from "mongoose";
+
 import User from "../models/user.models.js";
 import bcrypt from "bcrypt";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { ApiError } from "../utils/ApiError.js";
 import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
+dotenv.config({ path: "./.env" });
 
 const signup = async (req, res) => {
   try {
     const { name, email, password } = req.body;
-
+    
     if (!name || !email || !password) {
       throw new ApiError(400, "All fields are required");
     }
@@ -18,6 +20,7 @@ const signup = async (req, res) => {
       throw new ApiError(400, "Email already exists");
     }
 
+
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = await User.create({
@@ -25,11 +28,13 @@ const signup = async (req, res) => {
       email,
       password: hashedPassword
     });
+    
 
     return res
       .status(201)
       .json(new ApiResponse(201, user, "User registered successfully"));
   } catch (error) {
+    console.log(error)
     res.status(error.statusCode || 500).json({
       message: error.message || "Internal Server Error"
     });

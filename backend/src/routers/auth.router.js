@@ -1,11 +1,11 @@
-import authMiddleware from "../middlewares/auth.middleware.js";
+import authMiddleware from "../middlewares/auth.middlewere.js";
 
 import { Router } from "express";
-import { signup, loginUser } from "../controllers/auth.controller.js";
+import { signup, loginUser } from "../controller/auth.controller.js";
 
 const router = Router();
 
-router.post("/signup",signup ,signup);
-router.post("/login", authMiddleware,loginUser);
+router.post("/signup" ,signup);
+router.post("/login" ,loginUser);
 
 export default router;
