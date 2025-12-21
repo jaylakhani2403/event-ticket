@@ -54,10 +54,10 @@ function Login() {
     <div className="mx-auto max-w-xl rounded-2xl bg-white p-8 shadow-sm ring-1 ring-slate-200">
       <div className="mb-6">
         <h2 className="text-2xl font-semibold tracking-tight text-slate-900">
-          Welcome back
+          Organizer login
         </h2>
         <p className="mt-2 text-sm text-slate-600">
-          Sign in to manage your event tickets and purchases.
+          For event organizers only. Customers can book tickets without an account.
         </p>
       </div>
 

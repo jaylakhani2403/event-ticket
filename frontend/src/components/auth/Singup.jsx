@@ -59,9 +59,12 @@ function Signup() {
   return (
     <div className="mx-auto max-w-2xl rounded-2xl bg-white p-8 shadow-sm ring-1 ring-slate-200">
       <div className="mb-6">
-        <h2 className="text-2xl font-semibold tracking-tight text-slate-900">Create account</h2>
+        <h2 className="text-2xl font-semibold tracking-tight text-slate-900">
+          Organizer signup
+        </h2>
         <p className="mt-2 text-sm text-slate-600">
-          Sign up to buy and manage tickets for your favorite events.
+          Create an organizer account to publish and manage events. Customers do not need an
+          account to book tickets.
         </p>
       </div>
 

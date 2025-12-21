@@ -10,7 +10,7 @@ const url = process.env.MONGODB_URI  || "mongodb+srv://jaylakhani2404:jay123@clu
 const dbconfig = async () => {
   try {
     await mongoose.connect(url, {
-      dbName: "event-tic",
+      dbName: "event-tic1",
     });
 
     console.log("Connected successfully");

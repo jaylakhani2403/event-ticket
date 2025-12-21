@@ -12,6 +12,11 @@ export const eventadd = async (req, res) => {
     if (!title || !description || !venue || !ticketLimit || !approvalMode || !date) {
       throw new ApiError(400, "all fields required");
     }
+    const today = new Date().setHours(0, 0, 0, 0);
+    const eventDate = new Date(date).setHours(0, 0, 0, 0);
+    if (Number.isNaN(eventDate) || eventDate < today) {
+      throw new ApiError(400, "Event date must be today or a future date");
+    }
     const event = await Event.create({
       organizer: req.user._id,
       title,
