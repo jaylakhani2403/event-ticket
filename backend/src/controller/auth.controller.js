@@ -10,7 +10,7 @@ dotenv.config({ path: "./.env" });
 const signup = async (req, res) => {
   try {
     const { name, email, password } = req.body;
-    
+
     if (!name || !email || !password) {
       throw new ApiError(400, "All fields are required");
     }
@@ -20,24 +20,29 @@ const signup = async (req, res) => {
       throw new ApiError(400, "Email already exists");
     }
 
-
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = await User.create({
       name,
       email,
-      password: hashedPassword
+      password: hashedPassword,
     });
-    
 
-    return res
-      .status(201)
-      .json(new ApiResponse(201, user, "User registered successfully"));
+    const userResponse = user.toObject();
+    delete userResponse.password;
+
+    return res.status(201).json(
+      new ApiResponse(201, userResponse, "User registered successfully")
+    );
   } catch (error) {
-    console.log(error)
-    res
-      .status(error.statusCode || 500)
-      .json(new ApiResponse(error.statusCode || 500, null, error.message || "Internal Server Error"));
+    console.error(error);
+    return res.status(error.statusCode || 500).json(
+      new ApiResponse(
+        error.statusCode || 500,
+        null,
+        error.message || "Internal Server Error"
+      )
+    );
   }
 };
 
